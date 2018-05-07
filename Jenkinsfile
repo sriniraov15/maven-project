@@ -26,6 +26,9 @@ pipeline{
 				success {
 					echo 'Deploy to Staging is success'
 				}
+				failure {
+					echo 'Deploy to STAGE failed...'
+				}
 			}
 		}
 
