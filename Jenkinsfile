@@ -8,7 +8,7 @@ pipeline{
 	stages{
 		stage('Build'){
 			steps {
-				echo 'Executing sh...'
+				echo 'Executing bat...'
 				bat 'mvn clean package'
 			}
 			post {
@@ -21,6 +21,11 @@ pipeline{
 		stage ('Deploy to Staging'){
 			steps {
 				build job: 'deploy-to-staging'
+			}
+			post {
+				success {
+					echo 'Deploy to Staging is success'
+				}
 			}
 		}
 	}
