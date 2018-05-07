@@ -39,7 +39,7 @@ pipeline{
 				input message: 'Approve PRODUCTION Deployment?'
 			}
 
-			build job: 'Deploy-To-PRODUCTION'
+			build job: 'deploy-to-prod'
 			}
 
 			post {
