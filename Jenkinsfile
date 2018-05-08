@@ -34,7 +34,7 @@ pipeline{
 			parallel {
 				stage ('Deploy to Staging') {
 					steps {
-						sh "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_stage}:/var/lib/tomcat7/webapps"
+						bat "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_stage}:/var/lib/tomcat7/webapps"
 					}
 					post {
 						success {
@@ -48,7 +48,7 @@ pipeline{
 
 				stage ('Deploy to Production') {
 					steps {
-						sh "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_production}:/var/lib/tomcat7/webapps"
+						bat "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_production}:/var/lib/tomcat7/webapps"
 					}
 					post {
 						success {
