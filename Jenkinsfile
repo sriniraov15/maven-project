@@ -5,6 +5,17 @@ pipeline{
         maven 'localMaven'
     }
 
+    parameters {
+
+    	string(name: 'tomcat_stage', defaultValue: '52.14.153.52', description: 'Staging Server')
+    	string(name: 'tomcat_production', defaultValue: '18.188.99.51', description: 'Production Server')
+
+    }
+
+    triggers {
+    	pollSCM('* * * * *')
+    }
+
 	stages{
 		stage('Build'){
 			steps {
@@ -18,36 +29,35 @@ pipeline{
 				}
 			}
 		}
-		stage ('Deploy to Staging'){
-			steps {
-				build job: 'deploy-to-staging'
-			}
-			post {
-				success {
-					echo 'Deploy to Staging is success'
-				}
-				failure {
-					echo 'Deploy to STAGE failed...'
-				}
-			}
-		}
 
-		stage ('Deploy to Production'){
-			steps {
-		
-				timeout(time:5, unit:'MINUTES') {
-				input message: 'Approve PRODUCTION Deployment?'
-			}
-
-			build job: 'deploy-to-prod'
-			}
-
-			post {
-				success {
-					echo 'Code deployed to Production'
+		stage ('Deployments'){
+			parallel {
+				stage ('Deploy to Staging') {
+					steps {
+						sh "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_stage}:/var/lib/tomcat7/webapps"
+					}
+					post {
+						success {
+							echo 'Code deployed to Staging'
+						}
+						failure {
+							echo 'Deploy to STAGE failed...'
+						}
+					}
 				}
-				failure {
-					echo 'Production Deployment failed...'
+
+				stage ('Deploy to Production') {
+					steps {
+						sh "scp -i /AWSKeys/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_production}:/var/lib/tomcat7/webapps"
+					}
+					post {
+						success {
+							echo 'Code deployed to Production'
+						}
+						failure {
+							echo 'Production Deployment failed...'
+						}
+					}
 				}
 			}
 		}
